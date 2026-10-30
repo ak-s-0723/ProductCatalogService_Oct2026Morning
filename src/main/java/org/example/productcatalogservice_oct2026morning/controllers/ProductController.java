@@ -5,6 +5,10 @@ import org.example.productcatalogservice_oct2026morning.dtos.ProductDto;
 import org.example.productcatalogservice_oct2026morning.models.Product;
 import org.example.productcatalogservice_oct2026morning.services.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -34,9 +38,17 @@ public class ProductController {
 
 
     @GetMapping("/products/{id}")
-    public ProductDto getProductById(@PathVariable("id") Long productId) {
+    public ResponseEntity<ProductDto> getProductById(@PathVariable("id") Long productId) {
        Product product = productService.getProductById(productId);
-       return from(product);
+        MultiValueMap<String,String> headers = new LinkedMultiValueMap<>();
+        headers.add("called by","anurag khanna");
+
+       if (product == null) {
+           return new ResponseEntity<>(null,headers,HttpStatus.NOT_FOUND);
+       }
+
+       ProductDto productDto = from(product);
+       return new ResponseEntity<>(productDto, headers, HttpStatus.OK);
     }
 
     @PostMapping("/products")
