@@ -15,4 +15,7 @@ public class Product extends BaseModel {
     private Double price;
 
     private Category category;
+
+    private Boolean isPrimeSaleDiscountSpecific; //Sensitive Info
+    private Double commission;  //Sensitive Info
 }
