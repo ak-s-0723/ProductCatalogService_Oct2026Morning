@@ -2,6 +2,7 @@ package org.example.productcatalogservice_oct2026morning.controllers;
 
 import org.example.productcatalogservice_oct2026morning.dtos.CategoryDto;
 import org.example.productcatalogservice_oct2026morning.dtos.ProductDto;
+import org.example.productcatalogservice_oct2026morning.models.Category;
 import org.example.productcatalogservice_oct2026morning.models.Product;
 import org.example.productcatalogservice_oct2026morning.services.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +20,13 @@ import java.util.List;
 //container (spring context)  in which beans are stored
 
 @RestController
+@RequestMapping("/products")
 public class ProductController {
 
     @Autowired
     private IProductService productService;
 
-    @GetMapping("/products")
+    @GetMapping
     public List<ProductDto> getAllProducts() {
 //        Product product = new Product();
 //        product.setId(1L);
@@ -37,23 +39,54 @@ public class ProductController {
     }
 
 
-    @GetMapping("/products/{id}")
+    @GetMapping("{id}")
     public ResponseEntity<ProductDto> getProductById(@PathVariable("id") Long productId) {
+        if (productId <= 0L) {
+            throw new IllegalArgumentException("Please try with productId > 0");
+        }
+
        Product product = productService.getProductById(productId);
         MultiValueMap<String,String> headers = new LinkedMultiValueMap<>();
         headers.add("called by","anurag khanna");
 
        if (product == null) {
-           return new ResponseEntity<>(null,headers,HttpStatus.NOT_FOUND);
+           //return new ResponseEntity<>(null,headers,HttpStatus.NOT_FOUND);
+           throw  new RuntimeException("Product is not available");
        }
 
        ProductDto productDto = from(product);
        return new ResponseEntity<>(productDto, headers, HttpStatus.OK);
     }
 
-    @PostMapping("/products")
+
+    @PutMapping("{id}")
+    public ProductDto replaceProduct(@PathVariable Long id, @RequestBody ProductDto input) {
+        Product inputProduct = from(input);
+        Product response = productService.replaceProduct(id, inputProduct);
+        if(response == null) return null;
+        return from(response);
+    }
+
+
+    @PostMapping
     public ProductDto createProduct(@RequestBody ProductDto productDto) {
         return productDto;
+    }
+
+    private Product from(ProductDto productDto) {
+        Product product = new Product();
+        product.setId(productDto.getId());
+        product.setName(productDto.getName());
+        product.setPrice(productDto.getPrice());
+        product.setImageUrl(productDto.getImageUrl());
+        product.setDescription(productDto.getDescription());
+        if(productDto.getCategory() != null) {
+            Category category = new Category();
+            category.setName(productDto.getCategory().getName());
+            category.setId(productDto.getCategory().getId());
+            product.setCategory(category);
+        }
+        return product;
     }
 
     private ProductDto from(Product product) {
