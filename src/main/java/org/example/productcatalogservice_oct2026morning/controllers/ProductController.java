@@ -6,6 +6,7 @@ import org.example.productcatalogservice_oct2026morning.models.Category;
 import org.example.productcatalogservice_oct2026morning.models.Product;
 import org.example.productcatalogservice_oct2026morning.services.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
@@ -24,18 +25,17 @@ import java.util.List;
 public class ProductController {
 
     @Autowired
+    //@Qualifier("storageProductService")
     private IProductService productService;
 
     @GetMapping
     public List<ProductDto> getAllProducts() {
-//        Product product = new Product();
-//        product.setId(1L);
-//        product.setName("Iphone 18");
-//        product.setDescription("Launched in 2026");
-//        List<Product> products = new ArrayList<>();
-//        products.add(product);
-//        return products;
-        return null;
+        List<ProductDto> productDtos = new ArrayList<>();
+      List<Product> products = productService.getAllProducts();
+      for(Product product : products) {
+          productDtos.add(from(product));
+      }
+      return productDtos;
     }
 
 
@@ -70,7 +70,15 @@ public class ProductController {
 
     @PostMapping
     public ProductDto createProduct(@RequestBody ProductDto productDto) {
-        return productDto;
+        Product inputProduct = from(productDto);
+        Product output = productService.addProduct(inputProduct);
+        return from(output);
+    }
+
+
+    @DeleteMapping("{id}")
+    public void deleteById(@PathVariable Long id) {
+        productService.deleteProductById(id);
     }
 
     private Product from(ProductDto productDto) {

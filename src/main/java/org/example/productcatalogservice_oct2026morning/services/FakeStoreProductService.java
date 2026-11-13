@@ -16,8 +16,10 @@ import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
+
 @Service
-public class ProductService implements IProductService {
+public class FakeStoreProductService implements IProductService {
 
     @Autowired
     private RestTemplateBuilder restTemplateBuilder;
@@ -61,6 +63,21 @@ public class ProductService implements IProductService {
         }
 
         return null;
+    }
+
+    @Override
+    public Product addProduct(Product product) {
+        return null;
+    }
+
+    @Override
+    public List<Product> getAllProducts() {
+        return null;
+    }
+
+    @Override
+    public void deleteProductById(Long id) {
+
     }
 
     private <T> ResponseEntity<T> requestForEntity(HttpMethod httpMethod, String url, @Nullable Object request, Class<T> responseType, Object... uriVariables) throws RestClientException {
