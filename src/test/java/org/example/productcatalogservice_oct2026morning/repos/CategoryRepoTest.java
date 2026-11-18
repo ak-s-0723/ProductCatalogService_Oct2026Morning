@@ -39,4 +39,11 @@ class CategoryRepoTest {
             }
         }
     }
+
+
+    @Test
+    @Transactional
+    public void testCustomQuery() {
+        System.out.println(categoryRepo.getCategoryTitleById(2L));
+    }
 }
