@@ -41,7 +41,9 @@ public class ProductController {
 
     @GetMapping("{id}")
     public ResponseEntity<ProductDto> getProductById(@PathVariable("id") Long productId) {
-        if (productId <= 0L) {
+        if (productId < 0L) {
+            throw new IllegalArgumentException("Invalid ProductId");
+        } else if (productId == 0) {
             throw new IllegalArgumentException("Please try with productId > 0");
         }
 
